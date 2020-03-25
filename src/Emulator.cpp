@@ -7,8 +7,9 @@
 
 #include "Emulator.hpp"
 
-Emulator::Emulator(std::string gamepath)
-: _gamepath(gamepath)
+Emulator::Emulator(std::string gamepath, sf::RenderWindow &window)
+: _gamepath(gamepath),
+_window(window)
 {
     std::cout << "Emulator: Starting with " << this->_gamepath << std::endl;
     for (int i = 0; i < 16; i++)
@@ -22,11 +23,29 @@ Emulator::Emulator(std::string gamepath)
         memory[i] = 0;
     for (int i = 0; i < 16; i++)
         stack[i] = 0;
-    for (int i = 0; i < 64 * 32; i++)
-        display[i] = 0;
+    for (int i = 0; i < WIDTH * HEIGHT; i++) {
+        display[i] = 255;
+    }
+        
 }
 
 Emulator::~Emulator()
 {
     std::cout << "Emulator: Ending" << std::endl;
+}
+
+void Emulator::displayVideo()
+{
+    int x = 0;
+    int y = 0;
+    for (int i = 0; i < WIDTH * HEIGHT; i++) {
+        if (i % WIDTH == 0) {
+            if (i > WIDTH)
+                y++;
+            x = 0;
+        }
+        sf::FloatRect rectangle(x * PIXEL_SIZE, y * PIXEL_SIZE + PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE);
+        ImGui::DrawRectFilled(rectangle, sf::Color::White);
+        x++;
+    }
 }

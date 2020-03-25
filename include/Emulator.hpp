@@ -9,6 +9,13 @@
 
 #include <string>
 #include <iostream>
+#include <SFML/Graphics.hpp>
+#include "imgui.h"
+#include "imgui-SFML.h"
+
+#define HEIGHT 32
+#define WIDTH 64
+#define PIXEL_SIZE 9
 
 struct registers
 {
@@ -42,12 +49,14 @@ class Emulator
     };
 
     public:
-        Emulator(std::string gamepath);
+        Emulator(std::string gamepath, sf::RenderWindow &window);
         ~Emulator();
         const struct registers &getRegisters() { return (this->_registers); }
+        void displayVideo();
     protected:
     private:
         std::string _gamepath;
+        sf::RenderWindow &_window;
         struct registers _registers;
         unsigned char memory[4096];
         unsigned short stack[16];

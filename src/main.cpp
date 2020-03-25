@@ -14,23 +14,22 @@
 
 int main(int argc, char **argv)
 {
-    std::string title;
     sf::RenderWindow window;
     sf::Event event;
     sf::Clock deltaClock;
     std::unique_ptr<Emulator> emulator;
+    sf::Clock clock;
 
     if (argc != 2) {
         std::cerr << "USAGE: " << argv[0] << "game.ch8" << std::endl;
         return (84);
     }
 
-    title = "CHIP-8 Emulator : " + std::string(argv[1]);
-    window.create(sf::VideoMode(800, 600), title);
+    window.create(sf::VideoMode(800, 600), "CHIP-8 Emulator");
     window.setVerticalSyncEnabled(true);
     ImGui::SFML::Init(window);
 
-    emulator = std::make_unique<Emulator>(argv[1]);
+    emulator = std::make_unique<Emulator>(argv[1], window);
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
@@ -38,10 +37,22 @@ int main(int argc, char **argv)
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+
+        sf::Time time = clock.getElapsedTime();
+        double fps = 1.0 / time.asSeconds();
+        clock.restart().asSeconds();
+
         ImGui::SFML::Update(window, deltaClock.restart());
         displayRegisters(emulator->getRegisters());
-        ImGui::End();
+        
         window.clear();
+        ImGui::Begin(argv[1]);
+
+        ImGui::Text(std::string("FPS: " + std::to_string((int)fps)).c_str());
+
+        emulator->displayVideo();
+
+        ImGui::End();
         ImGui::SFML::Render(window);
         window.display();
     }
@@ -61,4 +72,5 @@ void displayRegisters(const struct registers &_registers)
     ImGui::NewLine();
     ImGui::Text(std::string("TD=0x" + to_hex<int>(_registers.timer_delay, std::hex)).c_str());
     ImGui::Text(std::string("TS=0x" + to_hex<int>(_registers.timer_sound, std::hex)).c_str());
+    ImGui::End();
 }
