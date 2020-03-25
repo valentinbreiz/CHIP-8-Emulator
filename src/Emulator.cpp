@@ -20,13 +20,11 @@ _window(window)
     this->_registers.timer_delay = 0;
     this->_registers.timer_sound = 0;
     for (int i = 0; i < 4096; i++)
-        memory[i] = 0;
+        _memory[i] = 0;
     for (int i = 0; i < 16; i++)
-        stack[i] = 0;
-    for (int i = 0; i < WIDTH * HEIGHT; i++) {
-        display[i] = 255;
-    }
-        
+        _stack[i] = 0;
+    for (int i = 0; i < WIDTH * HEIGHT; i++)
+        _display[i] = 1;
 }
 
 Emulator::~Emulator()
@@ -45,7 +43,12 @@ void Emulator::displayVideo()
             x = 0;
         }
         sf::FloatRect rectangle(x * PIXEL_SIZE, y * PIXEL_SIZE + PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE);
-        ImGui::DrawRectFilled(rectangle, sf::Color::White);
+        if (this->_display[i] == 1)
+            ImGui::DrawRectFilled(rectangle, sf::Color::White);
+        else if (this->_display[i] == 0)
+            ImGui::DrawRectFilled(rectangle, sf::Color::Black);
+        else
+            ImGui::DrawRectFilled(rectangle, sf::Color::Red);
         x++;
     }
 }

@@ -58,8 +58,8 @@ class Emulator
         std::string _gamepath;
         sf::RenderWindow &_window;
         struct registers _registers;
-        unsigned char memory[4096];
-        unsigned short stack[16];
-        unsigned char keys[16];
-        unsigned char display[64 * 32];
+        unsigned char _memory[4096];
+        unsigned short _stack[16];
+        unsigned char _keys[16];
+        unsigned char _display[64 * 32];
 };
