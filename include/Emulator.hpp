@@ -12,6 +12,8 @@
 #include <SFML/Graphics.hpp>
 #include "imgui.h"
 #include "imgui-SFML.h"
+#include "imgui_memory_editor.h"
+#include <fstream>
 
 #define HEIGHT 32
 #define WIDTH 64
@@ -53,6 +55,7 @@ class Emulator
         ~Emulator();
         const struct registers &getRegisters() { return (this->_registers); }
         void displayVideo();
+        void displayDump();
     protected:
     private:
         std::string _gamepath;
@@ -61,5 +64,5 @@ class Emulator
         unsigned char _memory[4096];
         unsigned short _stack[16];
         unsigned char _keys[16];
-        unsigned char _display[64 * 32];
+        unsigned char _display[WIDTH * HEIGHT];
 };

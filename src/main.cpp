@@ -25,7 +25,7 @@ int main(int argc, char **argv)
         return (84);
     }
 
-    window.create(sf::VideoMode(800, 600), "CHIP-8 Emulator");
+    window.create(sf::VideoMode(1400, 600), "CHIP-8 Emulator");
     window.setVerticalSyncEnabled(true);
     ImGui::SFML::Init(window);
 
@@ -53,6 +53,7 @@ int main(int argc, char **argv)
         emulator->displayVideo();
 
         ImGui::End();
+        emulator->displayDump();
         ImGui::SFML::Render(window);
         window.display();
     }
