@@ -18,6 +18,7 @@
 #define HEIGHT 32
 #define WIDTH 64
 #define PIXEL_SIZE 9
+#define START_ADDRESS 0x200
 
 struct registers
 {
@@ -25,8 +26,53 @@ struct registers
     unsigned short I; //index register
     unsigned short PC; //program counter
     unsigned char SP; //stack pointer
-    unsigned char timer_delay;
-    unsigned char timer_sound;
+    unsigned char DT; //Timer Delay
+    unsigned char ST; //Timer Sound
+};
+
+struct opcode
+{ 
+    unsigned short masque;
+    unsigned short id;
+};
+
+enum Actions
+{
+    _0NNN,
+    _00E0,
+    _00EE,
+    _1NNN,
+    _2NNN,
+    _3XNN,
+    _4XNN,
+    _5XY0,
+    _6XNN,
+    _7XNN,
+    _8XY0,
+    _8XY1,
+    _8XY2,
+    _BXY3,
+    _8XY4,
+    _8XY5,
+    _8XY6,
+    _8XY7,
+    _8XYE,
+    _9XY0,
+    _ANNN,
+    _BNNN,
+    _CXNN,
+    _DXYN,
+    _EX9E,
+    _EXA1,
+    _FX07,
+    _FX0A,
+    _FX15,
+    _FX18,
+    _FX1E,
+    _FX29,
+    _FX33,
+    _FX55,
+    _FX65
 };
 
 class Emulator
@@ -54,8 +100,13 @@ class Emulator
         Emulator(std::string gamepath, sf::RenderWindow &window);
         ~Emulator();
         const struct registers &getRegisters() { return (this->_registers); }
+        const unsigned short &getOpcode() { return (this->_opcode); }
+        const size_t &getAction() { return (this->_action); }
         void displayVideo();
         void displayDump();
+        void executeOperation();
+        void openFile(std::string gamepath);
+        void initRegistersMemory();
     protected:
     private:
         std::string _gamepath;
@@ -65,4 +116,7 @@ class Emulator
         unsigned short _stack[16];
         unsigned char _keys[16];
         unsigned char _display[WIDTH * HEIGHT];
+        unsigned short _opcode;
+        size_t _action;
+        struct opcode opcodes[35];
 };

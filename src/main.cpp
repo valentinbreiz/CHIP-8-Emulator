@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     }
 
     window.create(sf::VideoMode(1400, 600), "CHIP-8 Emulator");
-    window.setVerticalSyncEnabled(true);
+    window.setFramerateLimit(60);
     ImGui::SFML::Init(window);
 
     emulator = std::make_unique<Emulator>(argv[1], window);
@@ -43,7 +43,9 @@ int main(int argc, char **argv)
         clock.restart().asSeconds();
 
         ImGui::SFML::Update(window, deltaClock.restart());
-        displayRegisters(emulator->getRegisters());
+        displayRegisters(emulator->getRegisters(), emulator->getOpcode(), emulator->getAction());
+
+        emulator->executeOperation();
         
         window.clear();
         ImGui::Begin(argv[1]);
@@ -61,7 +63,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-void displayRegisters(const struct registers &_registers)
+void displayRegisters(const struct registers &_registers, short opcode, size_t action)
 {
     ImGui::Begin("Registers values");
     for (int i = 0; i < 16; i++)
@@ -71,7 +73,10 @@ void displayRegisters(const struct registers &_registers)
     ImGui::Text(std::string("PC=0x" + to_hex<int>(_registers.PC, std::hex)).c_str());
     ImGui::Text(std::string("SP=0x" + to_hex<int>(_registers.SP, std::hex)).c_str());
     ImGui::NewLine();
-    ImGui::Text(std::string("TD=0x" + to_hex<int>(_registers.timer_delay, std::hex)).c_str());
-    ImGui::Text(std::string("TS=0x" + to_hex<int>(_registers.timer_sound, std::hex)).c_str());
+    ImGui::Text(std::string("DT=0x" + to_hex<int>(_registers.DT, std::hex)).c_str());
+    ImGui::Text(std::string("ST=0x" + to_hex<int>(_registers.ST, std::hex)).c_str());
+    ImGui::NewLine();
+    ImGui::Text(std::string("OPCODE=0x" + to_hex<int>(opcode, std::hex)).c_str());
+    ImGui::Text(std::string("Action=" + std::to_string(action)).c_str());
     ImGui::End();
 }

@@ -20,4 +20,4 @@ std::string to_hex(T t, std::ios_base & (*f)(std::ios_base&))
     oss << std::uppercase << f << t;
     return oss.str();
 }
-void displayRegisters(const struct registers &_registers);
+void displayRegisters(const struct registers &_registers, short opcode, size_t action);
