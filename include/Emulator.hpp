@@ -107,6 +107,7 @@ class Emulator
         void executeOperation();
         void openFile(std::string gamepath);
         void initRegistersMemory();
+        size_t GetPointOffset(size_t x, size_t y);
     protected:
     private:
         std::string _gamepath;

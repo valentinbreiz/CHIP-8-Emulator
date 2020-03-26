@@ -19,23 +19,26 @@ int main(int argc, char **argv)
     sf::Clock deltaClock;
     std::unique_ptr<Emulator> emulator;
     sf::Clock clock;
+    bool can_continue = false;
 
     if (argc != 2) {
         std::cerr << "USAGE: " << argv[0] << "game.ch8" << std::endl;
         return (84);
     }
 
-    window.create(sf::VideoMode(1400, 600), "CHIP-8 Emulator");
+    window.create(sf::VideoMode(1400, 600), "CHIP-8 Emulator by valentinbreiz");
     window.setFramerateLimit(60);
     ImGui::SFML::Init(window);
 
     emulator = std::make_unique<Emulator>(argv[1], window);
-
+    
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
             ImGui::SFML::ProcessEvent(event);
             if (event.type == sf::Event::Closed)
                 window.close();
+            if (event.type == sf::Event::KeyPressed)
+                can_continue = true;
         }
 
         sf::Time time = clock.getElapsedTime();
@@ -45,7 +48,8 @@ int main(int argc, char **argv)
         ImGui::SFML::Update(window, deltaClock.restart());
         displayRegisters(emulator->getRegisters(), emulator->getOpcode(), emulator->getAction());
 
-        emulator->executeOperation();
+        if (can_continue)
+            emulator->executeOperation();
         
         window.clear();
         ImGui::Begin(argv[1]);
@@ -58,6 +62,7 @@ int main(int argc, char **argv)
         emulator->displayDump();
         ImGui::SFML::Render(window);
         window.display();
+        can_continue = false;
     }
     ImGui::SFML::Shutdown();
     return 0;

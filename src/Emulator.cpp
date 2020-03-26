@@ -68,7 +68,6 @@ void Emulator::openFile(std::string gamepath)
 		game.seekg(0, std::ios::beg);
 		data = new char[size+1];
 		game.read(data, size);
-        data = &data[1];
 		data[size] = '\0';
         for (int i = 0; i < size; i++)
             _memory[START_ADDRESS + i] = data[i];
@@ -102,7 +101,7 @@ void Emulator::initRegistersMemory()
 
 void Emulator::executeOperation()
 {
-    this->_opcode = this->_memory[this->_registers.PC] << 8 + this->_memory[this->_registers.PC + 1];
+    this->_opcode = this->_memory[this->_registers.PC] << 8 | this->_memory[this->_registers.PC + 1];
     for (this->_action = 0; this->_action < 35; this->_action++) { 
         if ((opcodes[this->_action].masque & this->_opcode) == opcodes[this->_action].id)
            break; 
@@ -110,18 +109,26 @@ void Emulator::executeOperation()
     unsigned char b3 = (this->_opcode & (0x0F00)) >> 8;
     unsigned char b2 = (this->_opcode & (0x00F0)) >> 4;
     unsigned char b1 = (this->_opcode & (0x000F));
-
+    //std::cout << "this->_registers.PC=0x" << std::hex << this->_registers.PC << std::endl << std::endl;;
     switch (this->_action)
     {
         case _0NNN:
             break;
         case _00E0:
+            for (int i = 0; i < HEIGHT * WIDTH; i++)
+                this->_display[i] = 0;
+            this->_registers.PC += 2;
             break;
         case _00EE:
             break;
         case _1NNN:
+            this->_registers.PC = (b3 << 8) + (b2 << 4) + b1;
             break;
         case _2NNN:
+            this->_stack[this->_registers.SP] = this->_registers.PC;
+            if (this->_registers.SP < 15)
+                this->_registers.SP++;
+            this->_registers.PC = (b3 << 8) + (b2 << 4) + b1;
             break;
         case _3XNN:
             break;
@@ -130,10 +137,16 @@ void Emulator::executeOperation()
         case _5XY0:
             break;
         case _6XNN:
+            this->_registers.V[b3] = (b2 << 4) + b1;
+            this->_registers.PC += 2;
             break;
         case _7XNN:
+            this->_registers.V[b3] += + (b2 << 4) + b1;
+            this->_registers.PC += 2;
             break;
         case _8XY0:
+            this->_registers.V[b3] = this->_registers.V[b2];
+            this->_registers.PC += 2;
             break;
         case _8XY1:
             break;
@@ -154,12 +167,32 @@ void Emulator::executeOperation()
         case _9XY0:
             break;
         case _ANNN:
+            this->_registers.I = (b3 << 8) + (b2 << 4) + b1;
+            this->_registers.PC += 2;
             break;
         case _BNNN:
             break;
         case _CXNN:
             break;
         case _DXYN:
+            this->_registers.V[0x0F] = 0;
+            unsigned short pixel;
+            for (unsigned char k = 0; k < b1; ++k){
+                pixel = this->_memory[this->_registers.I + k];
+                for (unsigned char j = 0; j < 8; ++j) {
+                    int x = (this->_registers.V[b3] + j) % WIDTH;
+                    int y = (this->_registers.V[b2] + k) % HEIGHT;
+                    if ((pixel & (0x80 >> j)) != 0) {
+                        if (this->_display[GetPointOffset(x, y)] == 0)
+                            this->_display[GetPointOffset(x, y)] = 1;
+                        else {
+                            this->_display[GetPointOffset(x, y)] = 0;
+                            this->_registers.V[0xF] = 1;
+                        }
+                    }
+                }
+            }
+            this->_registers.PC += 2;
             break;
         case _EX9E:
             break;
@@ -194,6 +227,11 @@ void Emulator::executeOperation()
             //beep
         --this->_registers.ST;
     }
+}
+
+size_t Emulator::GetPointOffset(size_t x, size_t y)
+{
+    return ((y * WIDTH) + x);
 }
 
 void Emulator::displayVideo()
