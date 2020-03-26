@@ -212,11 +212,13 @@ void Emulator::executeOperation()
                     int x = (this->_registers.V[b3] + j) % WIDTH;
                     int y = (this->_registers.V[b2] + k) % HEIGHT;
                     if ((pixel & (0x80 >> j)) != 0) {
-                        if (this->_display[GetPointOffset(x, y)] == 0)
+                        if (this->_display[GetPointOffset(x, y)] == 0) {
+                            this->_registers.V[0xF] = 1;
                             this->_display[GetPointOffset(x, y)] = 1;
+                        }
                         else {
                             this->_display[GetPointOffset(x, y)] = 0;
-                            this->_registers.V[0xF] = 1;
+                            //this->_registers.V[0xF] = 1;
                         }
                     }
                 }
@@ -238,11 +240,11 @@ void Emulator::executeOperation()
         case _FX0A:
             break;
         case _FX15:
-            this->_registers.DT = b3;
+            this->_registers.DT = this->_registers.V[b3];
             this->_registers.PC += 2;
             break;
         case _FX18:
-            this->_registers.ST = b3;
+            this->_registers.ST = this->_registers.V[b3];
             this->_registers.PC += 2;
             break;
         case _FX1E:

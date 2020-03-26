@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     window.setFramerateLimit(500);
     srand(time(0));
     ImGui::SFML::Init(window);
-
+    
     emulator = std::make_unique<Emulator>(argv[1], window, sound);
     
     while (window.isOpen()) {
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
             if (event.type == sf::Event::KeyPressed)
                 can_continue = true;
         }
-
+    
         sf::Time time = clock.getElapsedTime();
         double fps = 1.0 / time.asSeconds();
         clock.restart().asSeconds();
