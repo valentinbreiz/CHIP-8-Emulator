@@ -10,10 +10,14 @@
 #include <string>
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "imgui.h"
 #include "imgui-SFML.h"
 #include "imgui_memory_editor.h"
 #include <fstream>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <linux/kd.h>
 
 #define HEIGHT 32
 #define WIDTH 64
@@ -97,7 +101,7 @@ class Emulator
     };
 
     public:
-        Emulator(std::string gamepath, sf::RenderWindow &window);
+        Emulator(std::string gamepath, sf::RenderWindow &window, sf::Sound &sound);
         ~Emulator();
         const struct registers &getRegisters() { return (this->_registers); }
         const unsigned short &getOpcode() { return (this->_opcode); }
@@ -108,10 +112,12 @@ class Emulator
         void openFile(std::string gamepath);
         void initRegistersMemory();
         size_t GetPointOffset(size_t x, size_t y);
+        void setKey(unsigned char key, bool state);
     protected:
     private:
         std::string _gamepath;
         sf::RenderWindow &_window;
+        sf::Sound &_sound;
         struct registers _registers;
         unsigned char _memory[4096];
         unsigned short _stack[16];

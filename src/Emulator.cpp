@@ -7,9 +7,10 @@
 
 #include "Emulator.hpp"
 
-Emulator::Emulator(std::string gamepath, sf::RenderWindow &window)
+Emulator::Emulator(std::string gamepath, sf::RenderWindow &window, sf::Sound &sound)
 : _gamepath(gamepath),
-_window(window)
+_window(window),
+_sound(sound)
 {
     std::cout << "Emulator: Starting with " << this->_gamepath << std::endl;
     this->initRegistersMemory();
@@ -109,7 +110,6 @@ void Emulator::executeOperation()
     unsigned char b3 = (this->_opcode & (0x0F00)) >> 8;
     unsigned char b2 = (this->_opcode & (0x00F0)) >> 4;
     unsigned char b1 = (this->_opcode & (0x000F));
-    //std::cout << "this->_registers.PC=0x" << std::hex << this->_registers.PC << std::endl << std::endl;;
     switch (this->_action)
     {
         case _0NNN:
@@ -120,6 +120,11 @@ void Emulator::executeOperation()
             this->_registers.PC += 2;
             break;
         case _00EE:
+            if (this->_registers.SP > 0) {
+                this->_registers.SP--;
+                this->_registers.PC = this->_stack[this->_registers.SP];
+                this->_registers.PC += 2;
+            }
             break;
         case _1NNN:
             this->_registers.PC = (b3 << 8) + (b2 << 4) + b1;
@@ -131,8 +136,16 @@ void Emulator::executeOperation()
             this->_registers.PC = (b3 << 8) + (b2 << 4) + b1;
             break;
         case _3XNN:
+            if (this->_registers.V[b3] == ((b2 << 4) + b1))
+                this->_registers.PC += 4;
+            else
+                this->_registers.PC += 2;
             break;
         case _4XNN:
+            if (this->_registers.V[b3] == ((b2 << 4) + b1))
+                this->_registers.PC += 2;
+            else
+                this->_registers.PC += 4;
             break;
         case _5XY0:
             break;
@@ -151,12 +164,26 @@ void Emulator::executeOperation()
         case _8XY1:
             break;
         case _8XY2:
+            this->_registers.V[b3] &= this->_registers.V[b2];
+            this->_registers.PC += 2;
             break;
         case _BXY3:
             break;
         case _8XY4:
+            this->_registers.V[b3] += this->_registers.V[b2];
+            if (this->_registers.V[b2] > (0xFF - this->_registers.V[b3]))
+                this->_registers.V[0xF] = 1;
+            else
+                this->_registers.V[0xF] = 0;
+            this->_registers.PC += 2;
             break;
         case _8XY5:
+            this->_registers.V[b3] -= this->_registers.V[b2];
+            if (this->_registers.V[b2] < (this->_registers.V[b3]))
+                this->_registers.V[0xF] = 1;
+            else
+                this->_registers.V[0xF] = 0;
+            this->_registers.PC += 2;
             break;
         case _8XY6:
             break;
@@ -173,6 +200,8 @@ void Emulator::executeOperation()
         case _BNNN:
             break;
         case _CXNN:
+            this->_registers.V[b3] = ((rand() % 0xFF) & ((b2 << 4) + b1));
+            this->_registers.PC += 2;
             break;
         case _DXYN:
             this->_registers.V[0x0F] = 0;
@@ -197,24 +226,43 @@ void Emulator::executeOperation()
         case _EX9E:
             break;
         case _EXA1:
+            if (!this->_keys[this->_registers.V[b3]])
+                this->_registers.PC += 4;
+            else
+                this->_registers.PC += 2;
             break;
         case _FX07:
+            this->_registers.V[b3] = this->_registers.DT;
+            this->_registers.PC += 2;
             break;
         case _FX0A:
             break;
         case _FX15:
+            this->_registers.DT = b3;
+            this->_registers.PC += 2;
             break;
         case _FX18:
+            this->_registers.ST = b3;
+            this->_registers.PC += 2;
             break;
         case _FX1E:
             break;
         case _FX29:
+            this->_registers.I = this->_registers.V[b3] * 0x05;
+            this->_registers.PC += 2;
             break;
         case _FX33:
+            this->_memory[this->_registers.I] = this->_registers.V[b3] / 100;
+            this->_memory[this->_registers.I + 1] = (this->_registers.V[b3] / 10) % 10;
+            this->_memory[this->_registers.I + 1] = (this->_registers.V[b3] % 10) % 10;
+            this->_registers.PC += 2;
             break;
         case _FX55:
             break;
         case _FX65:
+            for (int i = this->_registers.I; i < b3; i++)
+                this->_registers.V[i] = this->_memory[this->_registers.I + i];
+            this->_registers.PC += 2;
             break;
         default:
             std::cout << "Unknown opcode: action=" << std::to_string(this->_action) << std::endl;
@@ -223,8 +271,8 @@ void Emulator::executeOperation()
     if (this->_registers.DT > 0)
         --this->_registers.DT;
     if (this->_registers.ST > 0) {
-        //if (this->_registers.ST == 1)
-            //beep
+        if (this->_registers.ST == 1)
+            _sound.play();
         --this->_registers.ST;
     }
 }
@@ -232,6 +280,11 @@ void Emulator::executeOperation()
 size_t Emulator::GetPointOffset(size_t x, size_t y)
 {
     return ((y * WIDTH) + x);
+}
+
+void Emulator::setKey(unsigned char key, bool state)
+{
+    this->_keys[key] = state;
 }
 
 void Emulator::displayVideo()

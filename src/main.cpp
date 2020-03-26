@@ -10,6 +10,7 @@
 #include "imgui-SFML.h"
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "include.hpp"
 
 int main(int argc, char **argv)
@@ -20,17 +21,22 @@ int main(int argc, char **argv)
     std::unique_ptr<Emulator> emulator;
     sf::Clock clock;
     bool can_continue = false;
+    sf::SoundBuffer buffer;
+    sf::Sound sound;
 
     if (argc != 2) {
         std::cerr << "USAGE: " << argv[0] << "game.ch8" << std::endl;
         return (84);
     }
-
-    window.create(sf::VideoMode(1400, 600), "CHIP-8 Emulator by valentinbreiz");
-    window.setFramerateLimit(60);
+    if (!buffer.loadFromFile("beep.wav"))
+        return (84);
+    sound.setBuffer(buffer);
+    window.create(sf::VideoMode(1400, 600), "CHIP-8 Emulator");
+    window.setFramerateLimit(500);
+    srand(time(0));
     ImGui::SFML::Init(window);
 
-    emulator = std::make_unique<Emulator>(argv[1], window);
+    emulator = std::make_unique<Emulator>(argv[1], window, sound);
     
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
@@ -48,8 +54,28 @@ int main(int argc, char **argv)
         ImGui::SFML::Update(window, deltaClock.restart());
         displayRegisters(emulator->getRegisters(), emulator->getOpcode(), emulator->getAction());
 
-        if (can_continue)
-            emulator->executeOperation();
+        //if (can_continue)
+        emulator->executeOperation();
+        
+        emulator->setKey(0x1, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num1));
+        emulator->setKey(0x2, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num2));
+        emulator->setKey(0x3, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num3));
+        emulator->setKey(0xC, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num4));
+        
+        emulator->setKey(0x4, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q));
+        emulator->setKey(0x5, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W));
+        emulator->setKey(0x6, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E));
+        emulator->setKey(0xD, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R));
+        
+        emulator->setKey(0x7, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A));
+        emulator->setKey(0x8, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S));
+        emulator->setKey(0x9, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D));
+        emulator->setKey(0xE, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F));
+        
+        emulator->setKey(0xA, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z));
+        emulator->setKey(0x0, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::X));
+        emulator->setKey(0xB, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C));
+        emulator->setKey(0xF, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::V));
         
         window.clear();
         ImGui::Begin(argv[1]);
