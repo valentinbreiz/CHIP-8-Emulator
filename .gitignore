@@ -37,3 +37,5 @@ chip-8-emulator
 .idea
 CMakeLists.txt
 cmake-build-debug
+vgcore.*
+imgui.ini

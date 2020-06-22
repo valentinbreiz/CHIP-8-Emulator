@@ -16,6 +16,7 @@ CXXFLAGS        =       -I. -I./include -I./include/imgui-1.75 -Wall -Wextra -ls
 SRCS   			=       ./src/main.cpp \
 						./src/Application.cpp \
                         ./src/Emulator.cpp \
+						./src/Opcodes.cpp \
 						./include/imgui-1.75/imgui.cpp \
 						./include/imgui-1.75/imgui_draw.cpp \
 						./include/imgui-1.75/imgui-SFML.cpp \
