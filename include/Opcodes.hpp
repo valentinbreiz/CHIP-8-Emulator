@@ -35,7 +35,6 @@ class Opcodes
     public:
         Opcodes();
         ~Opcodes();
-        size_t GetPointOffset(size_t x, size_t y);
 
         typedef void (Opcodes::*TArithActionFunc)(unsigned char,unsigned char,unsigned char);
 
@@ -69,7 +68,7 @@ class Opcodes
             };
         };
 
-        int action(TAction::Actions a_actionIdx, unsigned char b1, unsigned char b2, unsigned char b3)
+        void action(TAction::Actions a_actionIdx, unsigned char b1, unsigned char b2, unsigned char b3)
         {
             (this->*m_actionFcns[a_actionIdx])(b1, b2, b3);
         }
@@ -86,7 +85,7 @@ class Opcodes
 
     protected:
     private:
-
+        size_t GetPointOffset(size_t x, size_t y);
         static TArithActionFunc m_actionFcns[TAction::count];
         void opcode_0NNN(unsigned char b1, unsigned char b2, unsigned char b3);
         void opcode_00E0(unsigned char b1, unsigned char b2, unsigned char b3);

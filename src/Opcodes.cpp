@@ -93,7 +93,9 @@ void Opcodes::opcode_4XNN(unsigned char b1, unsigned char b2, unsigned char b3)
 }
 
 void Opcodes::opcode_5XY0(unsigned char b1, unsigned char b2, unsigned char b3)
-{}
+{
+    
+}
 
 void Opcodes::opcode_6XNN(unsigned char b1, unsigned char b2, unsigned char b3)
 {

@@ -11,8 +11,8 @@ Emulator::Emulator(std::string gamepath, sf::RenderWindow &window, sf::Sound &so
 {
     std::cout << "Emulator: Starting with " << gamepath << std::endl;
     machine = std::make_shared<Opcodes>();
-    this->openFile(gamepath);
     this->initRegistersMemory();
+    this->openFile(gamepath);
     machine->_gamepath = gamepath;
     machine->opcodes[0].masque = 0x0000; machine->opcodes[0].id = 0x0FFF;
     machine->opcodes[1].masque = 0xFFFF; machine->opcodes[1].id = 0x00E0;
@@ -111,10 +111,8 @@ void Emulator::executeOperation()
     unsigned char b2 = (machine->_opcode & (0x00F0)) >> 4;
     unsigned char b1 = (machine->_opcode & (0x000F));
 
-    for (int i = 0 ; i < Opcodes::TAction::count ; ++i) {
-        machine->action((Opcodes::TAction::Actions)i, b1, b2, b3);
-    }
-
+    machine->action((Opcodes::TAction::Actions)machine->_action, b1, b2, b3);
+    
     if (machine->_registers.DT > 0)
         --machine->_registers.DT;
     if (machine->_registers.ST > 0) {
