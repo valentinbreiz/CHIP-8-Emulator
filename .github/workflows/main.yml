@@ -1,0 +1,18 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Build Checker
+    runs-on: ubuntu-latest
+    container: epitechcontent/epitest-docker:latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      - name: BuildStandard
+        run: make
