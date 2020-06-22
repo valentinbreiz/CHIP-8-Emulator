@@ -14,6 +14,7 @@ NAME            =		chip-8-emulator
 CXXFLAGS        =       -I. -I./include -I./include/imgui-1.75 -Wall -Wextra -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lGL
 
 SRCS   			=       ./src/main.cpp \
+						./src/Application.cpp \
                         ./src/Emulator.cpp \
 						./include/imgui-1.75/imgui.cpp \
 						./include/imgui-1.75/imgui_draw.cpp \
