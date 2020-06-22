@@ -6,6 +6,7 @@
 */
 
 #include "Emulator.hpp"
+#include "Opcodes.hpp"
 
 Emulator::Emulator(std::string gamepath, sf::RenderWindow &window, sf::Sound &sound)
 : _gamepath(gamepath),
@@ -15,6 +16,7 @@ _sound(sound)
     std::cout << "Emulator: Starting with " << this->_gamepath << std::endl;
     this->initRegistersMemory();
     this->openFile(gamepath);
+    machine = std::make_shared<Opcodes>(this);
     opcodes[0].masque = 0x0000; opcodes[0].id = 0x0FFF;
     opcodes[1].masque = 0xFFFF; opcodes[1].id = 0x00E0;
     opcodes[2].masque = 0xFFFF; opcodes[2].id = 0x00EE;
@@ -109,6 +111,12 @@ void Emulator::executeOperation()
     unsigned char b3 = (this->_opcode & (0x0F00)) >> 8;
     unsigned char b2 = (this->_opcode & (0x00F0)) >> 4;
     unsigned char b1 = (this->_opcode & (0x000F));
+
+    for(int i = 0 ; i <Opcodes::TAction::count ; ++i) {
+        machine->action((Opcodes::TAction::Actions)i);
+    }
+
+    /*
     switch (this->_action)
     {
         case _0NNN:
@@ -268,7 +276,7 @@ void Emulator::executeOperation()
         default:
             std::cout << "Unknown opcode: action=" << std::to_string(this->_action) << std::endl;
             break;
-    }
+    }*/
     if (this->_registers.DT > 0)
         --this->_registers.DT;
     if (this->_registers.ST > 0) {

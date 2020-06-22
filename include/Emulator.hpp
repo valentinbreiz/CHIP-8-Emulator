@@ -19,6 +19,7 @@
 #include <unistd.h>
 #include <linux/kd.h>
 #include "Error.hpp"
+#include "Opcodes.hpp"
 
 #define HEIGHT 32
 #define WIDTH 64
@@ -39,45 +40,6 @@ struct opcode
 { 
     unsigned short masque;
     unsigned short id;
-};
-
-enum Actions
-{
-    _0NNN,
-    _00E0,
-    _00EE,
-    _1NNN,
-    _2NNN,
-    _3XNN,
-    _4XNN,
-    _5XY0,
-    _6XNN,
-    _7XNN,
-    _8XY0,
-    _8XY1,
-    _8XY2,
-    _BXY3,
-    _8XY4,
-    _8XY5,
-    _8XY6,
-    _8XY7,
-    _8XYE,
-    _9XY0,
-    _ANNN,
-    _BNNN,
-    _CXNN,
-    _DXYN,
-    _EX9E,
-    _EXA1,
-    _FX07,
-    _FX0A,
-    _FX15,
-    _FX18,
-    _FX1E,
-    _FX29,
-    _FX33,
-    _FX55,
-    _FX65
 };
 
 class Emulator
@@ -114,8 +76,7 @@ class Emulator
         void initRegistersMemory();
         size_t GetPointOffset(size_t x, size_t y);
         void setKey(unsigned char key, bool state);
-    protected:
-    private:
+
         std::string _gamepath;
         sf::RenderWindow &_window;
         sf::Sound &_sound;
@@ -127,4 +88,8 @@ class Emulator
         unsigned short _opcode;
         size_t _action;
         struct opcode opcodes[35];
+
+        std::shared_ptr<Opcodes> machine;
+    protected:
+    private:
 };
