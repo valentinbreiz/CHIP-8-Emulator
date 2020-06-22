@@ -61,6 +61,7 @@ void Emulator::openFile(std::string gamepath)
 {
     std::ifstream game; 
 	size_t size = 0;
+
 	game.open(gamepath, std::ios::in | std::ios::binary | std::ios::ate);
 	if (game.is_open()) {
 		char* data = NULL;
@@ -73,10 +74,8 @@ void Emulator::openFile(std::string gamepath)
         for (int i = 0; i < size; i++)
             _memory[START_ADDRESS + i] = data[i];
 	}
-    else {
-        std::cerr << "Error loading file." << std::endl;
-        exit(84);
-    }
+    else
+        throw Error("Error loading .ch8 file.");
 }
 
 void Emulator::initRegistersMemory()
