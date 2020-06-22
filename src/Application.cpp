@@ -9,8 +9,7 @@
 
 Application::Application(int argc, char **argv) : binary_name(std::string(argv[1]))
 {
-    if (argc != 2)
-        throw Error("Arguments are not 2");
+    
     if (!buffer.loadFromFile("beep.wav"))
         throw Error("Sound file parsing parsing failed!");
     sound.setBuffer(buffer);

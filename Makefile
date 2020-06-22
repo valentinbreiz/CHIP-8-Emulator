@@ -5,7 +5,7 @@
 ## Makefile
 ##
 
-CC      		= 		g++
+CC      		= 		g++ -g
 
 RM				=		rm -f
 

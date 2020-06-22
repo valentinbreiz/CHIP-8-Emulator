@@ -18,6 +18,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <linux/kd.h>
+#include "Error.hpp"
 
 #define HEIGHT 32
 #define WIDTH 64
