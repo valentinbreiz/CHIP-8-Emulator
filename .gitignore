@@ -34,3 +34,6 @@ chip-8-emulator
 
 #ide
 .vscode
+.idea
+CMakeLists.txt
+cmake-build-debug

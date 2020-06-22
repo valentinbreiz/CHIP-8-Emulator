@@ -32,7 +32,7 @@ int main(int argc, char **argv)
         return (84);
     sound.setBuffer(buffer);
     window.create(sf::VideoMode(1400, 600), "CHIP-8 Emulator");
-    window.setFramerateLimit(500);
+    window.setFramerateLimit(60);
     srand(time(0));
     ImGui::SFML::Init(window);
     
