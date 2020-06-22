@@ -17,7 +17,6 @@ Opcodes::~Opcodes()
 }
 
 Opcodes::TArithActionFunc Opcodes:: m_actionFcns[TAction::count] = {
-
     &Opcodes::opcode_0NNN,
     &Opcodes::opcode_00E0,
     &Opcodes::opcode_00EE,
@@ -25,6 +24,19 @@ Opcodes::TArithActionFunc Opcodes:: m_actionFcns[TAction::count] = {
     &Opcodes::opcode_2NNN,
     &Opcodes::opcode_3XNN,
     &Opcodes::opcode_4XNN,
+    &Opcodes::opcode_5XY0,
+    &Opcodes::opcode_6XNN,
+    &Opcodes::opcode_7XNN,
+    &Opcodes::opcode_8XY0,
+    &Opcodes::opcode_8XY1,
+    &Opcodes::opcode_8XY2,
+    &Opcodes::opcode_BXY3,
+    &Opcodes::opcode_8XY4,
+    &Opcodes::opcode_8XY5,
+    &Opcodes::opcode_8XY6,
+    &Opcodes::opcode_8XY7,
+    &Opcodes::opcode_8XYE,
+    &Opcodes::opcode_9XY0,
     &Opcodes::opcode_ANNN,
     &Opcodes::opcode_BNNN,
     &Opcodes::opcode_CXNN,
@@ -39,7 +51,7 @@ Opcodes::TArithActionFunc Opcodes:: m_actionFcns[TAction::count] = {
     &Opcodes::opcode_FX29,
     &Opcodes::opcode_FX33,
     &Opcodes::opcode_FX55,
-    &Opcodes::opcode_FX65
+    &Opcodes::opcode_FX65,
 };
 
 void Opcodes::opcode_0NNN(unsigned char b1, unsigned char b2, unsigned char b3)
